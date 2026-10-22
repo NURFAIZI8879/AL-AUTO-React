@@ -10,6 +10,7 @@ import Paket from './pages/Paket';
 import Testimoni from './pages/Testimoni';
 import Pendaftaran from './pages/Pendaftaran';
 import FAQ from './pages/FAQ';
+import NotFound from './pages/NotFound';
 
 function ProtectedRoute({ children, adminOnly = false }) {
   const { user, userDoc, loading } = useAuth();
@@ -33,6 +34,7 @@ export default function App() {
               <Route path="/testimoni" element={<Testimoni />} />
               <Route path="/pendaftaran" element={<Pendaftaran />} />
               <Route path="/faq" element={<FAQ />} />
+              <Route path="*" element={<NotFound />} />
               <Route path="/absensi" element={<ProtectedRoute><Absensi /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute adminOnly><Admin /></ProtectedRoute>} />
             </Routes>
