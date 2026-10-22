@@ -93,6 +93,8 @@ export default function Login() {
               <label className="block text-sm font-semibold text-navy mb-1.5">Password</label>
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} className="w-full px-3.5 py-2.5 border border-line rounded-lg text-sm focus:outline-none focus:border-blue focus:ring-2 focus:ring-blue/10" />
             </div>
+            {/* reCAPTCHA placeholder (ganti YOUR_SITE_KEY) */}
+            {/* <div className="g-recaptcha" data-sitekey="YOUR_RECAPTCHA_SITE_KEY" /> */}
             <button type="submit" disabled={loading} className="w-full py-3 rounded-lg bg-navy text-white font-semibold text-sm hover:bg-blue transition-all disabled:opacity-60">
               {loading ? 'Memproses...' : 'Daftar'}
             </button>
