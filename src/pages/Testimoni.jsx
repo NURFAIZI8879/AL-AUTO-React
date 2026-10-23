@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+
 const testimonials = [
   { name: 'Budi S.', package: 'Paket Bisa Matic', quote: 'Instruktornya sabar dan jelas. Saya yang awalnya takut nyetir sekarang sudah percaya diri.' },
   { name: 'Sari D.', package: 'Paket Mahir Manual', quote: 'Jadwal fleksibel, bisa disesuaikan dengan kerja. Mobil bersih dan aman.' },
@@ -6,36 +9,93 @@ const testimonials = [
 ];
 
 export default function Testimoni() {
+  const base = import.meta.env.BASE_URL;
+  const [lightbox, setLightbox] = useState(null);
+
   return (
-    <div className="py-16 sm:py-24">
-      <div className="max-w-7xl mx-auto px-5">
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <span className="inline-block text-blue text-xs font-semibold tracking-[0.16em] uppercase mb-2">Testimoni</span>
-          <h1 className="text-3xl sm:text-4xl font-bold text-navy mb-3">Apa Kata Pelanggan Kami</h1>
-          <p className="text-muted text-base">Ulasan tertulis dari peserta yang sudah belajar bersama AL AUTO.</p>
+    <>
+      <section className="page-hero">
+        <img className="page-hero-img" src={`${base}assets/img/bg-testimoni.jpg`} alt="" aria-hidden="true" />
+        <div className="page-hero-overlay" />
+        <div className="page-hero-content fade-in">
+          <span className="hero-eyebrow">Testimoni</span>
+          <h1>Apa Kata Pelanggan Kami</h1>
+          <p>Ulasan tertulis dari peserta yang sudah belajar bersama AL AUTO.</p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {testimonials.map((t, i) => (
-            <article key={i} className="bg-white border border-line rounded-xl p-7 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all">
-              <p className="text-muted text-sm italic leading-relaxed mb-4">"{t.quote}"</p>
-              <h3 className="text-base font-semibold text-navy">{t.name}</h3>
-              <p className="text-xs text-muted mt-1">{t.package}</p>
-            </article>
-          ))}
+      </section>
+
+      <section className="section section-alt">
+        <div className="container">
+          <div className="section-head fade-in">
+            <span className="eyebrow">Testimoni</span>
+            <h2>Apa Kata Mereka</h2>
+            <p>Ulasan tertulis dari peserta yang sudah belajar bersama AL AUTO.</p>
+          </div>
+          <div className="grid grid-3">
+            {testimonials.map((t, i) => (
+              <article className="card fade-in" key={i}>
+                <p style={{ fontStyle: 'italic', color: 'var(--muted)' }}>&ldquo;{t.quote}&rdquo;</p>
+                <h3 style={{ marginTop: 12, fontSize: 16 }}>{t.name}</h3>
+                <p style={{ fontSize: 13, color: 'var(--muted)', margin: 0 }}>{t.package}</p>
+              </article>
+            ))}
+          </div>
         </div>
-        <div className="text-center max-w-3xl mx-auto mb-8">
-          <span className="inline-block text-blue text-xs font-semibold tracking-[0.16em] uppercase mb-2">Galeri</span>
-          <h2 className="text-2xl sm:text-3xl font-bold text-navy mb-3">Galeri Testimoni</h2>
-          <p className="text-muted text-base">Klik gambar untuk memperbesar.</p>
+      </section>
+
+      <section className="section">
+        <div className="container">
+          <div className="section-head fade-in">
+            <span className="eyebrow">Galeri</span>
+            <h2>Galeri Testimoni Kami</h2>
+            <p>Klik gambar untuk memperbesar.</p>
+          </div>
+          <div className="carousel fade-in">
+            <div className="slide" id="testi-slide">
+              {Array.from({ length: 8 }, (_, i) => {
+                const src = `${base}assets/img/testimoni/testi${i + 1}.${i < 5 ? 'png' : 'jpg'}`;
+                return (
+                  <figure className="team-member" key={i}>
+                    <img
+                      src={src}
+                      alt={`Testimoni pelanggan ${i + 1}`}
+                      loading="lazy"
+                      onClick={() => setLightbox(src)}
+                    />
+                  </figure>
+                );
+              })}
+            </div>
+          </div>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }, (_, i) => (
-            <figure key={i} className="rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer">
-              <img src={`${import.meta.env.BASE_URL}assets/img/testimoni/testi${i + 1}.${i < 5 ? 'png' : 'jpg'}`} alt={`Testimoni pelanggan ${i + 1}`} className="w-full h-48 object-cover hover:scale-105 transition-transform" loading="lazy" />
-            </figure>
-          ))}
+      </section>
+
+      <section className="cta-band">
+        <div className="container">
+          <div className="cta-inner fade-in">
+            <div className="cta-text">
+              <h2>Ingin Seperti Mereka?</h2>
+              <p>Daftar sekarang dan mulai belajar mengemudi bersama AL AUTO.</p>
+            </div>
+            <div className="cta-actions">
+              <Link className="btn btn-primary" to="/pendaftaran">Daftar Sekarang</Link>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </section>
+
+      {lightbox && (
+        <div
+          className="lightbox"
+          style={{ display: 'flex' }}
+          onClick={() => setLightbox(null)}
+        >
+          <button className="lightbox-close" type="button" aria-label="Tutup gambar" onClick={() => setLightbox(null)}>
+            &times;
+          </button>
+          <img className="lightbox-img" src={lightbox} alt="Testimoni" />
+        </div>
+      )}
+    </>
   );
 }

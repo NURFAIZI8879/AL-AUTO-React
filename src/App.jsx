@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ScrollFx from './components/ScrollFx';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Absensi from './pages/Absensi';
@@ -25,9 +26,9 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter basename={import.meta.env.BASE_URL}>
-        <div className="min-h-screen flex flex-col bg-cream">
+        <div className="min-h-screen flex flex-col bg-white">
           <Navbar />
-          <main className="flex-1 pt-[72px]">
+          <main className="page flex-1">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
@@ -42,6 +43,7 @@ export default function App() {
             </Routes>
           </main>
           <Footer />
+          <ScrollFx />
         </div>
       </BrowserRouter>
     </AuthProvider>

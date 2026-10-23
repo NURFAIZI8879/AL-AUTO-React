@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { collection, query, where, getDocs, addDoc, serverTimestamp, orderBy } from 'firebase/firestore';
+import { collection, query, where, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 
 export default function Absensi() {
@@ -30,7 +30,6 @@ export default function Absensi() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!tanggal || !status) { setMsg('Mohon lengkapi formulir absensi.'); return; }
-    // cegah duplikat tanggal
     if (history.some((h) => h.tanggal === tanggal)) {
       setMsg('Anda sudah absen pada tanggal ini.');
       return;
@@ -65,7 +64,7 @@ export default function Absensi() {
         <div className="text-center">
           <h2 className="text-2xl font-bold text-navy mb-3">Login Diperlukan</h2>
           <p className="text-muted mb-5">Silakan login terlebih dahulu untuk mengakses fitur absensi.</p>
-          <a href="/login" className="inline-flex items-center justify-center px-7 py-3 rounded-lg bg-navy text-white font-semibold text-sm hover:bg-blue transition-all">Login / Daftar</a>
+          <a href="/login" className="btn btn-navy">Login / Daftar</a>
         </div>
       </div>
     );
@@ -77,68 +76,73 @@ export default function Absensi() {
         <div className="text-center">
           <h2 className="text-2xl font-bold text-navy mb-3">Absensi Belum Tersedia</h2>
           <p className="text-muted mb-5">Akun Anda belum diverifikasi admin. Fitur absensi akan aktif setelah disetujui.</p>
-          <a href="/login" className="inline-flex items-center justify-center px-7 py-3 rounded-lg bg-navy text-white font-semibold text-sm hover:bg-blue transition-all">Kembali</a>
+          <a href="/login" className="btn btn-navy">Kembali</a>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="py-16 sm:py-24">
-      <div className="max-w-2xl mx-auto px-5">
-        <div className="text-center mb-10">
-          <span className="inline-block text-blue text-xs font-semibold tracking-[0.16em] uppercase mb-2">Absensi</span>
-          <h1 className="text-3xl sm:text-4xl font-bold text-navy mb-3">Absensi Kehadiran Peserta</h1>
-          <p className="text-muted text-base">Fitur absensi hanya tersedia untuk user yang sudah login, terdaftar, dan diverifikasi admin.</p>
+    <>
+      <section className="page-head">
+        <div className="container">
+          <span className="hero-eyebrow">Absensi</span>
+          <h1>Absensi Kehadiran Peserta</h1>
+          <p>Fitur absensi hanya tersedia untuk user yang sudah login, terdaftar, dan diverifikasi admin.</p>
         </div>
-        <div className="bg-white border border-line rounded-2xl p-8 shadow-sm">
-          <h2 className="text-xl font-bold text-navy mb-2">Silakan Isi Absensi Kehadiran</h2>
-          <p className="text-muted text-sm mb-6">Data absensi akan tersimpan dan dapat dilihat admin.</p>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-semibold text-navy mb-1.5">Pertemuan ke-</label>
-              <input type="text" value={`Pertemuan ke-${pertemuan}`} readOnly className="w-full px-3.5 py-2.5 border border-line rounded-lg text-sm bg-soft text-muted cursor-not-allowed" />
+      </section>
+
+      <section className="form-section">
+        <div className="container" style={{ maxWidth: 720 }}>
+          <div className="form-card">
+            <h2>Silakan Isi Absensi Kehadiran</h2>
+            <p className="form-subtitle">Data absensi akan tersimpan dan dapat dilihat admin.</p>
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label>Pertemuan ke-</label>
+                <input type="text" value={`Pertemuan ke-${pertemuan}`} readOnly />
+              </div>
+              <div className="form-group">
+                <label>Tanggal</label>
+                <input type="date" value={tanggal} onChange={(e) => setTanggal(e.target.value)} required max={new Date().toISOString().split('T')[0]} />
+              </div>
+              <div className="form-group">
+                <label>Status Kehadiran</label>
+                <select value={status} onChange={(e) => setStatus(e.target.value)} required>
+                  <option value="" disabled>Pilih Status</option>
+                  <option value="Hadir">Hadir</option>
+                  <option value="Izin">Izin</option>
+                  <option value="Sakit">Sakit</option>
+                  <option value="Alfa">Alfa</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Catatan (opsional)</label>
+                <textarea value={catatan} onChange={(e) => setCatatan(e.target.value)} rows={2} placeholder="Contoh: latihan parkir" style={{ resize: 'vertical' }} />
+              </div>
+              <button type="submit" disabled={loading} className="btn btn-navy btn-block">
+                {loading ? 'Memproses...' : 'Kirim Absensi'}
+              </button>
+            </form>
+            {msg && <p className="form-note" style={{ color: msg.includes('berhasil') ? '#16a34a' : '#dc2626' }}>{msg}</p>}
+            <div style={{ marginTop: 24 }}>
+              <h3 style={{ fontSize: 18, color: 'var(--navy)', marginBottom: 8 }}>Riwayat Absensi</h3>
+              {history.length === 0 ? (
+                <p className="text-muted" style={{ fontSize: 14 }}>Belum ada riwayat absensi.</p>
+              ) : (
+                <ul className="list-none p-0" style={{ margin: 0 }}>
+                  {history.map((h) => (
+                    <li key={h.id} style={{ padding: '8px 0', borderBottom: '1px dashed var(--line)', fontSize: 14 }}>
+                      <strong style={{ color: 'var(--navy)' }}>{h.idAbsen}</strong> — {h.tanggal} — {h.status}
+                      {h.note && <span className="text-muted"> (Catatan: {h.note})</span>}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
-            <div>
-              <label className="block text-sm font-semibold text-navy mb-1.5">Tanggal</label>
-              <input type="date" value={tanggal} onChange={(e) => setTanggal(e.target.value)} required max={new Date().toISOString().split('T')[0]} className="w-full px-3.5 py-2.5 border border-line rounded-lg text-sm focus:outline-none focus:border-blue focus:ring-2 focus:ring-blue/10" />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-navy mb-1.5">Status Kehadiran</label>
-              <select value={status} onChange={(e) => setStatus(e.target.value)} required className="w-full px-3.5 py-2.5 border border-line rounded-lg text-sm focus:outline-none focus:border-blue focus:ring-2 focus:ring-blue/10">
-                <option value="" disabled>Pilih Status</option>
-                <option value="Hadir">Hadir</option>
-                <option value="Izin">Izin</option>
-                <option value="Sakit">Sakit</option>
-                <option value="Alfa">Alfa</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-navy mb-1.5">Catatan (opsional)</label>
-              <textarea value={catatan} onChange={(e) => setCatatan(e.target.value)} rows={2} placeholder="Contoh: latihan parkir" className="w-full px-3.5 py-2.5 border border-line rounded-lg text-sm focus:outline-none focus:border-blue focus:ring-2 focus:ring-blue/10 resize-y" />
-            </div>
-            <button type="submit" disabled={loading} className="w-full py-3 rounded-lg bg-navy text-white font-semibold text-sm hover:bg-blue transition-all disabled:opacity-60">
-              {loading ? 'Memproses...' : 'Kirim Absensi'}
-            </button>
-          </form>
-          {msg && <p className={`mt-3 text-center text-sm ${msg.includes('berhasil') ? 'text-green-600' : 'text-red-500'}`}>{msg}</p>}
-          <div className="mt-6">
-            <h3 className="text-lg font-semibold text-navy mb-3">Riwayat Absensi</h3>
-            {history.length === 0 ? (
-              <p className="text-muted text-sm">Belum ada riwayat absensi.</p>
-            ) : (
-              <ul className="list-none p-0 space-y-2">
-                {history.map((h) => (
-                  <li key={h.id} className="py-2 border-b border-dashed border-line text-sm">
-                    <strong className="text-navy">{h.idAbsen}</strong> — {h.tanggal} — {h.status}
-                    {h.note && <span className="text-muted"> (Catatan: {h.note})</span>}
-                  </li>
-                ))}
-              </ul>
-            )}
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </>
   );
 }
