@@ -225,8 +225,8 @@ git push
 
 ## 📞 Kontak
 
-- **WhatsApp:** 0897-9480-919
-- **Email:** [isi email]
+- **WhatsApp:** 0852-6804-2056
+- **Email:** Faiziasyi140406@gmail.com
 - **Lokasi:** Kota Palembang, Sumatera Selatan
 - **GitHub:** [https://github.com/NURFAIZI8879](https://github.com/NURFAIZI8879)
 
